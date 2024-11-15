@@ -1,0 +1,313 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Contact Manager API",
+      "version": "1.0.0",
+      "description": "API documentation for Contact Manager"
+    },
+    "paths": {
+      "/api/auth/register": {
+        "post": {
+          "summary": "Register a new user",
+          "parameters": [
+            {
+              "name": "username",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "password",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "email",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "User registered successfully"
+            },
+            "400": {
+              "description": "Bad request"
+            }
+          }
+        }
+      },
+      "/api/auth/login": {
+        "post": {
+          "summary": "Login a user",
+          "parameters": [
+            {
+              "name": "email",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "password",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Login successful"
+            },
+            "400": {
+              "description": "Invalid credentials"
+            }
+          }
+        }
+      },
+      "/api/contacts": {
+        "get": {
+          "summary": "Get all contacts",
+          "parameters": [
+            {
+              "name": "page",
+              "in": "query",
+              "type": "integer",
+              "description": "Page number for pagination",
+              "default": 1
+            },
+            {
+              "name": "size",
+              "in": "query",
+              "type": "integer",
+              "description": "Page size for pagination",
+              "default": 10
+            },
+            {
+              "name": "search",
+              "in": "query",
+              "type": "string",
+              "description": "Search keyword for name, email, phone"
+            },
+            {
+              "name": "favorite",
+              "in": "query",
+              "type": "boolean",
+              "description": "Filter by favorite status"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of contacts",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Contact"
+                }
+              }
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new contact",
+          "parameters": [
+            {
+              "name": "contact",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Contact"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Contact created successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            }
+          }
+        }
+      },
+      "/api/contacts/{id}": {
+        "get": {
+          "summary": "Get a specific contact by ID",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "ID of the contact"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Contact details",
+              "schema": {
+                "$ref": "#/definitions/Contact"
+              }
+            },
+            "404": {
+              "description": "Contact not found"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update a contact",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "ID of the contact"
+            },
+            {
+              "name": "contact",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Contact"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Contact updated successfully"
+            },
+            "400": {
+              "description": "Invalid input"
+            },
+            "404": {
+              "description": "Contact not found"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a contact",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "ID of the contact"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Contact deleted successfully"
+            },
+            "404": {
+              "description": "Contact not found"
+            }
+          }
+        }
+      },
+      "/api/contacts/{id}/favorite": {
+        "put": {
+          "summary": "Toggle favorite status of a contact",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "string",
+              "description": "ID of the contact"
+            },
+            {
+              "name": "favorite",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Favorite status updated successfully"
+            },
+            "404": {
+              "description": "Contact not found"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Contact": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Full name of the contact"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Phone number of the contact",
+            "pattern": "^\\+?[0-9]{10,15}$"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the contact",
+            "pattern": "^\\S+@\\S+\\.\\S+$"
+          },
+          "address": {
+            "type": "object",
+            "properties": {
+              "street": { "type": "string" },
+              "city": { "type": "string" },
+              "state": { "type": "string" },
+              "postalCode": { "type": "string" }
+            }
+          },
+          "notes": {
+            "type": "string",
+            "description": "Additional notes about the contact"
+          },
+          "birthday": {
+            "type": "string",
+            "format": "date",
+            "description": "Contact's birthday"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Tags for categorizing the contact"
+          },
+          "favorite": {
+            "type": "boolean",
+            "description": "Whether the contact is marked as favorite"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of when the contact was created"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the last update to the contact"
+          }
+        },
+        "required": ["name", "phone", "email"]
+      }
+    }
+  }
+  
